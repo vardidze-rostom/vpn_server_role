@@ -6,3 +6,4 @@
     name: nginx
     enabled: true
     state: restarted
+  tags: pgbouncer-exporter

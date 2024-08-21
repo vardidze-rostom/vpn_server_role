@@ -1,11 +1,13 @@
 ---
 
 - name: Обновление всех пакетов
+  tags: vpn-server
   ansible.builtin.apt:
     update_cache: true
     upgrade: "yes"
 
 - name: Установка ПО
+  tags: vpn-server
   ansible.builtin.apt:
     name:
       - nginx
@@ -14,6 +16,7 @@
     state: present
 
 - name: Создание конфигурационного файла для виртуального хоста Nginx
+  tags: vpn-server
   ansible.builtin.copy:
     dest: /etc/nginx/sites-available/{{ domain_name }}
     mode: "0644"
@@ -28,28 +31,33 @@
       }
 
 - name: Создание символьной ссылки на конфигурацию виртуального хоста
+  tags: vpn-server
   ansible.builtin.file:
     src: /etc/nginx/sites-available/{{ domain_name }}
     dest: /etc/nginx/sites-enabled/{{ domain_name }}
     state: link
 
 - name: Удаление файла конфигурации по умолчанию
+  tags: vpn-server
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
 
 - name: Проверка конфигурации Nginx
+  tags: vpn-server
   ansible.builtin.command: nginx -t
   register: my_output # <- Registers the command output.
   changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
 
 - name: Получение SSL-сертификата от Let's Encrypt
+  tags: vpn-server
   ansible.builtin.command: certbot --nginx --non-interactive --agree-tos --email {{ email }} -d {{ domain_name }}
   register: my_output # <- Registers the command output.
   changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
   notify: Restart nginx
 
 - name: Создание пользователей и добавление SSH ключей
+  tags: vpn-server
   ansible.builtin.user:
     name: "{{ item.name }}"
     state: present
@@ -57,7 +65,8 @@
   with_items: "{{ users }}"
 
 - name: Настройка SSH ключей для пользователей
-  authorized_key:
+  tags: vpn-server
+  ansible.builtin.authorized_key:
     user: "{{ item.name }}"
     key: "{{ item.ssh_key }}"
   with_items: "{{ users }}"

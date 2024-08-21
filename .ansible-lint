@@ -1,0 +1,9 @@
+---
+
+skip_list:
+  - experimental
+  - role-name
+
+exclude_paths:
+  - molecule/
+  - meta/

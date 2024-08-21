@@ -132,7 +132,6 @@
     regexp: '^PasswordAuthentication\s+yes'
     line: 'PasswordAuthentication no'
     state: present
-    validate: '/usr/sbin/sshd -t'
 
 - name: Отключение входа по паролю в дополнительных конфигурационных файлах SSH
   ansible.builtin.lineinfile:
@@ -140,7 +139,6 @@
     regexp: '^PasswordAuthentication\s+yes'
     line: 'PasswordAuthentication no'
     state: present
-    validate: '/usr/sbin/sshd -t'
 
 - name: Reboot the server
   tags: vpn-server

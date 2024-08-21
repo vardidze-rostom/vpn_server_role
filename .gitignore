@@ -1,0 +1,10 @@
+.venv
+.vscode
+.idea
+*.DS_Store
+.history
+*.pyc
+.vagrant
+__pycache__
+*.retry
+*.swp

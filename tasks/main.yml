@@ -128,14 +128,19 @@
 
 - name: Отключение входа по паролю в дополнительных конфигурационных файлах SSH
   ansible.builtin.lineinfile:
-    path: "{{ item }}"
+    path: "/etc/ssh/sshd_config"
     regexp: '^PasswordAuthentication\s+yes'
     line: 'PasswordAuthentication no'
     state: present
     validate: '/usr/sbin/sshd -t'
-  with_fileglob:
-    - /etc/ssh/sshd_config.d/*.conf
-    - /etc/ssh/*.conf
+
+- name: Отключение входа по паролю в дополнительных конфигурационных файлах SSH
+  ansible.builtin.lineinfile:
+    path: "/etc/ssh/sshd_config.d/50-cloud-init.conf"
+    regexp: '^PasswordAuthentication\s+yes'
+    line: 'PasswordAuthentication no'
+    state: present
+    validate: '/usr/sbin/sshd -t'
 
 - name: Reboot the server
   tags: vpn-server

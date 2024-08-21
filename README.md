@@ -1,5 +1,5 @@
 # VPN Server role
-Installing and configuring PGBouncer Exporter.
+Prepare a server for install a VPN.
 
 ## Variables
 The role supports the following variables:

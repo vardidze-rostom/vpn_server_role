@@ -1,0 +1,19 @@
+---
+
+galaxy_info:
+  author: Vardidze Rostom
+  description: install vpn-server
+  company: yadro.com
+  namespace: yadro
+  license: BSD-3-Clause
+  min_ansible_version: 2.12.10
+  version: 1.0.0
+  role_name: vpn-server
+  platforms:
+    - name: Ubuntu
+      version:
+        - noble
+  galaxy_tags:
+    - vpn-server
+
+dependencies: []

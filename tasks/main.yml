@@ -1,0 +1,63 @@
+---
+
+- name: Обновление всех пакетов
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: "yes"
+
+- name: Установка ПО
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Создание конфигурационного файла для виртуального хоста Nginx
+  ansible.builtin.copy:
+    dest: /etc/nginx/sites-available/{{ domain_name }}
+    mode: "0644"
+    content: |
+      server {
+          server_name {{ domain_name }};
+          server_tokens off;
+
+          location / {
+              proxy_pass http://127.0.0.1:{{ vpn_port  }};
+          }
+      }
+
+- name: Создание символьной ссылки на конфигурацию виртуального хоста
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/{{ domain_name }}
+    dest: /etc/nginx/sites-enabled/{{ domain_name }}
+    state: link
+
+- name: Удаление файла конфигурации по умолчанию
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Проверка конфигурации Nginx
+  ansible.builtin.command: nginx -t
+  register: my_output # <- Registers the command output.
+  changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
+
+- name: Получение SSL-сертификата от Let's Encrypt
+  ansible.builtin.command: certbot --nginx --non-interactive --agree-tos --email {{ email }} -d {{ domain_name }}
+  register: my_output # <- Registers the command output.
+  changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
+  notify: Restart nginx
+
+- name: Создание пользователей и добавление SSH ключей
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    state: present
+    shell: /bin/bash
+  with_items: "{{ users }}"
+
+- name: Настройка SSH ключей для пользователей
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+  with_items: "{{ users }}"

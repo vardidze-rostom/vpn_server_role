@@ -17,7 +17,7 @@
       - containerd
       - runc
     state: absent
-    autoremove: yes
+    autoremove: true
 
 - name: Добавление Docker GPG ключа
   ansible.builtin.shell: |
@@ -36,7 +36,7 @@
 
 - name: Обновление Apt кеша
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
 
 - name: Установка Docker и связанных пакетов
   ansible.builtin.apt:
